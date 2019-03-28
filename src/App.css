@@ -8,6 +8,11 @@
   pointer-events: none;
 }
 
+.App-img {
+  height: 40vmin;
+  pointer-events: none;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -18,6 +23,28 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+table{
+  color: black;
+  background-color: white;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+/* .myTable {
+  bg-color: red;
+  background-color:red;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+} */
 
 .App-link {
   color: #61dafb;

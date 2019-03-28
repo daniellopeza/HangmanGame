@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './hangmanLogo.png';
 import './App.css';
 import App from './App';
 
@@ -8,20 +8,34 @@ class Home extends Component {
       console.log("Rendering Home page")
     return (
       <div className="Home">
+
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          {/* <img src={logo} className="App-img" alt="logo" /> */}
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            {/* Edit <code>src/App.js</code> and save to reload. */}
+            Hangman
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          <table  id= "myTable">
+          <tbody>
+            <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Country</th>
+            </tr>
+            </tbody>
+            </table>
+
+            <form>
+            <br></br>
+            Guess a letter: 
+            <input type="text" name="guess"/>
+            <input type="submit" value="Submit"/>
+            </form>
         </header>
+        
+        
+
+
       </div>
     );
   }
