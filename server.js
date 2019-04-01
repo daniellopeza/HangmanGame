@@ -1,48 +1,35 @@
 var express = require('express');
 var cors = require('cors');
-// var mysql = require('mysql');
+var bodyParser = require('body-parser');
+var app = express();
+app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 var MongoClient = require('mongodb').MongoClient;
 //Create a database named "mydb":
 var url = "mongodb://localhost:27017/mydb";
 
 MongoClient.connect(url, function(err, db) {
-  if (err) {
-    console.log(err);
-    throw err;
-}
+  if (err) throw err;
   console.log("Database created!");
   db.close();
 });
 
+app.use(express.static(__dirname +'./index.html')); //serves the index.html
 
-var app = express();
 
-app.use(cors());
-
-app.listen(3306, () => {
-    console.log(`Server listening on port 3306`)
+app.listen(4000, () => {
+    console.log(`Server listening on port 4000`)
 });
 
-app.get('/', (req, res) => {
-    res.send('hello from server.js')
+app.get('/gameWord', (req, res) => {
+    console.log("hitting /gameWord route")
+    res.sendfile('./public/index.html');
 });
 
-
-// const SELECT_ALL_QUERY = 'SELECT * FROM tableName';
-
-// // takes a config object
-// var connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'daniellopez@email.arizona.edu',
-//     password: 'CS346proj2',
-// });
-
-// connection.connect(err => {
-    
-//     if(err) {
-//         console.log('Error while trying to connect')
-//         console.log(err)
-//         return err;
-//     }
-//     console.log("Connected to mySql")
-// });
+app.get('*', (req, res) => {
+    console.log("hitting / route")
+    res.sendfile('./public/index.html');
+});
