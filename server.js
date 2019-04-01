@@ -28,7 +28,13 @@ MongoClient.connect(url, function(err, db) {
         db.close();
     });
 
-    var guess = {guess: ""}
+    mydb.collection("guess").deleteMany({}, function(err, obj) {
+        if (err) throw err;
+        console.log("1 document deleted");
+        db.close();
+    });
+
+    var guess = {guess: ["_", "_", "_", "_", "_"]}
     mydb.collection("guess").insertOne(guess, function(err, res) {
         if (err) throw err;
         console.log("Number of documents inserted: " + res.insertedCount);
@@ -46,9 +52,49 @@ app.listen(4000, () => {
 
 app.post('/enterGuess', (req, res) => {
     console.log("hitting /gameWord route")
-    console.log("Recieved guess : ", req.body)
-    res.send("recieved guess");
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var mydb = db.db("mydb")
+
+        // NOTE: you can res.send anywhere, depending on the data you 
+        // want to send but only one res.send is allowed
+
+        // update current guessed array
+        var newvalues = {$set: {guess: req.body} };
+        mydb.collection("guess").updateOne({} , newvalues, function(err, result) {
+            if (err) throw err;
+            console.log(result.result.nModified + " document(s) updated");
+            db.close();
+        });
+        
+        // check current guessed array state for updated change
+        // mydb.collection("guess").findOne({}, function(err, result) {
+        //     if (err) throw err;
+        //     console.log('game guess = ', result.guess);
+        //     res.send({updatedGuess: result.guess})
+        //     db.close();
+        // });
+
+    });
+
+
 });
+
+app.get('/getGuess', (req, res) => {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var mydb = db.db("mydb")
+
+        mydb.collection("guess").findOne({}, function(err, result) {
+            if (err) throw err;
+            console.log('game guess = ', result.guess);
+            res.send({guess: result.guess})
+            db.close();
+        });
+
+    });
+})
 
 app.get('*', (req, res) => {
     // Query for the word to be used in Hangman game
@@ -59,9 +105,15 @@ app.get('*', (req, res) => {
         mydb.collection("words").findOne({}, function(err, result) {
             if (err) throw err;
             console.log('game word = ', result.word);
-            res.send(result.word)
+            res.send("result.word")
             db.close();
         });
+
+        // mydb.collection("guess").findOne({}, function(err, result) {
+        //     if (err) throw err;
+        //     console.log('game guess = ', result.guess);
+        //     db.close();
+        // });
 
     });
 
