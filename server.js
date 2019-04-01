@@ -12,9 +12,19 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/mydb";
 
 MongoClient.connect(url, function(err, db) {
-  if (err) throw err;
-  console.log("Database created!");
-  db.close();
+    if (err) throw err;
+    console.log("Database created!");
+    var mydb = db.db("mydb")
+    var words = [
+        { word: "Cloud"},
+        { word: "Quantum"}
+        ];
+  
+    mydb.collection("words").insertMany(words, function(err, res) {
+        if (err) throw err;
+        console.log("Number of documents inserted: " + res.insertedCount);
+        db.close();
+    });
 });
 
 app.use(express.static(__dirname +'./index.html')); //serves the index.html
@@ -31,5 +41,17 @@ app.get('/gameWord', (req, res) => {
 
 app.get('*', (req, res) => {
     console.log("hitting / route")
-    res.sendfile('./public/index.html');
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var mydb = db.db("mydb")
+
+        mydb.collection("words").findOne({}, function(err, result) {
+            if (err) throw err;
+            console.log('game word = ', result.word);
+            db.close();
+        });
+
+    });
+    res.send({})
 });
