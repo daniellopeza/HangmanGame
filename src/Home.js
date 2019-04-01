@@ -9,8 +9,7 @@ class Home extends Component {
     super(props);
 
     this.state = {
-      // TODO: Feed word via props
-      word: ["C", "l", "o", "u", "d"],
+      word: [],
       guess: ["_", "_", "_", "_", "_"],
       letterGuess: ''
     };
@@ -18,13 +17,20 @@ class Home extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  // get database info on mount and set state
+  // initialize game state from DB on mount
   componentDidMount() {
     fetch('/getGuess')
     .then(res => res.json())
     .then(json => {
-      this.setState(json)
-      console.log("HOME CDM received: ", json.guess)
+        this.setState(json)
+        console.log("HOME CDM received: ", json.guess)
+    })
+
+    fetch('/getWord')
+    .then(res => res.json())
+    .then(json => {
+        this.setState(json)
+        console.log("HOME CDM received: ", json.word)
     })
     
   }
@@ -50,7 +56,7 @@ class Home extends Component {
 
   async handleSubmit(event){
     event.preventDefault(); // prevents refresh after submittion
-    console.log("handleSubmit")
+
     const {word, guess} = this.state;
 
     if (this.state.letterGuess.length > 1){
@@ -58,30 +64,46 @@ class Home extends Component {
         return;
     }
 
-    // iterate through game word and current guessed, if the current guess matches
-    // any letter in the game word, update the current guessed array to display the
-    // correct guessed letter.
+    // Hangman Game Functionality: iterate through game word and
+    // current guessed, if the current guess matches any letter
+    // in the game word, update the current guessed array to 
+    // display the correct guessed letter.
+    // The front-end will update its state in updateItem() 
+    // and then send the updated state to the server to store in DB. 
+    // NOTE: need to worry about updated changed being represented 
+    // one two nodes. If we only fetch for the curr guessed at the 
+    // beginning of the game, then updates wont be shown on the other clients. 
     let i = 0;
+    let guessedOne = false;
     while(i < this.state.word.length){
         if(this.state.word[i].toLowerCase() == this.state.letterGuess.toLowerCase()){
             console.log("Good Job! Guessed one letter.")
+            guessedOne = true;
             await this.updateItem(i)  
         }
         i++;
     }
 
+    if (!guessedOne) alert('Guess not correct. Try again.')
+
     // fetch after guess has been updated
+    // if client did not guess one, but has updates on another client, 
+    // this fetch will get those updates and show them to this client
     fetch('/enterGuess', 
       {
         method: 'POST',
         body: JSON.stringify(this.state.guess),
         headers : { 
+          // NEED headers to send json obj
           'Content-Type': 'application/json',
           'Accept': 'application/json'
-        } // NEED headers to send json obj
+        } 
       })
       .then(res => res.json())
-      .then(json => console.log("Front-end received: ", json))
+      .then(json => {
+        console.log("Front-end received: ", json)
+        this.setState({guess: json.updatedGuess})
+      })
       .catch(err => console.log("ERROR: ", err))
   }
 
@@ -92,7 +114,6 @@ class Home extends Component {
       <div className="Home">
         <header className="App-header">
           <p> Hangman</p>
-          {console.log("state rendering = ", this.state.guess)}
             <Table guess={this.state.guess}/>
 
             <form name="guessForm" method="POST" onSubmit={this.handleSubmit}>

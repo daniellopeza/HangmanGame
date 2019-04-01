@@ -28,20 +28,20 @@ MongoClient.connect(url, function(err, db) {
         db.close();
     });
 
+    // Delete prior guess/game state if server is restarted
     mydb.collection("guess").deleteMany({}, function(err, obj) {
         if (err) throw err;
         console.log("1 document deleted");
         db.close();
     });
 
+    // insert the current guessed in a seperate table and query for it separately
     var guess = {guess: ["_", "_", "_", "_", "_"]}
     mydb.collection("guess").insertOne(guess, function(err, res) {
         if (err) throw err;
         console.log("Number of documents inserted: " + res.insertedCount);
         db.close();
     });
-
-    // INSERT the current guessed in a seperate table and query for it separately
 });
 
 app.use(express.static(__dirname +'./index.html')); //serves the index.html
@@ -69,12 +69,12 @@ app.post('/enterGuess', (req, res) => {
         });
         
         // check current guessed array state for updated change
-        // mydb.collection("guess").findOne({}, function(err, result) {
-        //     if (err) throw err;
-        //     console.log('game guess = ', result.guess);
-        //     res.send({updatedGuess: result.guess})
-        //     db.close();
-        // });
+        mydb.collection("guess").findOne({}, function(err, result) {
+            if (err) throw err;
+            console.log('game guess = ', result.guess);
+            res.send({updatedGuess: result.guess})
+            db.close();
+        });
 
     });
 
@@ -96,8 +96,7 @@ app.get('/getGuess', (req, res) => {
     });
 })
 
-app.get('*', (req, res) => {
-    // Query for the word to be used in Hangman game
+app.get('/getWord', (req, res) => {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var mydb = db.db("mydb")
@@ -105,16 +104,13 @@ app.get('*', (req, res) => {
         mydb.collection("words").findOne({}, function(err, result) {
             if (err) throw err;
             console.log('game word = ', result.word);
-            res.send("result.word")
+            res.send({word: result.word})
             db.close();
         });
 
-        // mydb.collection("guess").findOne({}, function(err, result) {
-        //     if (err) throw err;
-        //     console.log('game guess = ', result.guess);
-        //     db.close();
-        // });
-
     });
+})
 
+app.get('*', (req, res) => {
+    res.send("Welcome to Hangman")
 });
