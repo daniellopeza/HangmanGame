@@ -20,6 +20,7 @@ class Home extends Component {
 
   // onMount() can be where database info is fetched!
 
+
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value })
   }
@@ -33,7 +34,9 @@ class Home extends Component {
                     return item;
                 }
             });
+            console.log("done updating")
             return {
+              
                 guess,
             };
         });
@@ -53,16 +56,23 @@ class Home extends Component {
     while(i < this.state.word.length){
         if(this.state.word[i].toLowerCase() == this.state.letterGuess.toLowerCase()){
             console.log("Good Job! Guessed one letter.")
-            this.updateItem(i)
+            await this.updateItem(i)
+            // start fetch after update
+            fetch('/enterGuess', 
+              {
+                method: 'POST',
+                body: JSON.stringify(this.state.guess),
+                headers : { 
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                } // NEED headers to send json obj
+              })
+              .then(res => res.json())
+              .then(json => console.log(json))
+              
         }
         i++;
     }
-    // const form = await axios.post('/api/form', {
-    //     name, // == name: name;
-    //     email,
-    //     systemType,
-    //     rSelected,
-    // })
   }
 
 

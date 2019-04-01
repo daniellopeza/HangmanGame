@@ -8,7 +8,6 @@ class App extends Component {
 
   componentDidMount() {
     fetch('/')
-    fetch('/gameWord')
   }
 
 

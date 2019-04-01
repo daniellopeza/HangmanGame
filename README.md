@@ -82,14 +82,14 @@ Written by Daniel Lopez:
 To run the program:
 
 FIRST start mongod, the mongo deamon, which must be running in the background. 
-Run the following command on the command line to run: 
-mongod
+    Run the following command on the command line to run: 
+    mongod
 
 SECOND cd into project directory and start the server: 
-node server.js 
+    node server.js 
 
 THIRD start the front end: 
-npm start
+    npm start
 
 NOTE: The front-end knows how to query the back-end server because of the proxy field
 added within package.json

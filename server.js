@@ -27,6 +27,15 @@ MongoClient.connect(url, function(err, db) {
         console.log("Number of documents inserted: " + res.insertedCount);
         db.close();
     });
+
+    var guess = {guess: ""}
+    mydb.collection("guess").insertOne(guess, function(err, res) {
+        if (err) throw err;
+        console.log("Number of documents inserted: " + res.insertedCount);
+        db.close();
+    });
+
+    // INSERT the current guessed in a seperate table and query for it separately
 });
 
 app.use(express.static(__dirname +'./index.html')); //serves the index.html
@@ -35,9 +44,10 @@ app.listen(4000, () => {
     console.log(`Server listening on port 4000`)
 });
 
-app.get('/gameWord', (req, res) => {
+app.post('/enterGuess', (req, res) => {
     console.log("hitting /gameWord route")
-    res.sendfile('./public/index.html');
+    console.log("Recieved guess : ", req.body)
+    res.send("recieved guess");
 });
 
 app.get('*', (req, res) => {
