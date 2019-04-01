@@ -54,6 +54,7 @@ class Home extends Component {
       });
   }
 
+  // handleSubmit = async (event) =>
   async handleSubmit(event){
     event.preventDefault(); // prevents refresh after submittion
 
