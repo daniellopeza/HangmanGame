@@ -1,0 +1,8 @@
+ec2-52-207-233-219.compute-1.amazonaws.com
+ec2-18-212-63-166.compute-1.amazonaws.com
+ec2-54-211-12-183.compute-1.amazonaws.com
+
+Command to copy from local to ec2 instance:
+scp -i AWScs346.pem -r HangmanGame ec2-user@ec2-52-207-233-219.compute-1.amazonaws.com:/home/ec2-user
+
+You must include the .pem permission key and the "ec2-user@<Public DNS>:<path>
